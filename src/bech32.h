@@ -28,6 +28,15 @@ enum class Encoding {
     BECH32M, //!< Bech32m encoding as defined in BIP350
 };
 
+/** Character limits for Bech32(m) encoded strings. Character limits are how we provide error location guarantees.
+ *  These values should never exceed 2^31 - 1 (max value for a 32-bit int), since there are places where we may need to
+ *  convert the CharLimit::VALUE to an int. In practice, this should never happen since this CharLimit applies to an address encoding
+ *  and we would never encode an address with such a massive value */
+enum CharLimit : size_t {
+    BECH32 = 90,            //!< BIP173/350 imposed character limit for Bech32(m) encoded addresses. This guarantees finding up to 4 errors.
+    SILENT_PAYMENTS = 1024, //!< BIP352 imposed 1024 character limit on Bech32m encoded silent payment addresses. This guarantees finding up to 3 errors
+};
+
 /** Encode a Bech32 or Bech32m string. If hrp contains uppercase characters, this will cause an
  *  assertion error. Encoding must be one of BECH32 or BECH32M. */
 std::string Encode(Encoding encoding, const std::string& hrp, const std::vector<uint8_t>& values);

@@ -20,6 +20,7 @@ Features:
 * Optional module for public key recovery.
 * Optional module for ECDH key exchange.
 * Optional module for Schnorr signatures according to [BIP-340](https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki).
+* Optional module for Silent Payments send and receive according to [BIP-352](https://github.com/bitcoin/bips/blob/master/bip-0352.mediawiki).
 
 Implementation details
 ----------------------
@@ -81,7 +82,7 @@ To maintain a pristine source tree, CMake encourages to perform an out-of-source
     $ cmake ..
     $ make
     $ make check  # run the test suite
-    $ sudo make install  # optional
+    $ sudo make --install . # optional
 
 To compile optional modules (such as Schnorr signatures), you need to run `cmake` with additional flags (such as `-DSECP256K1_ENABLE_MODULE_SCHNORRSIG=ON`). Run `cmake .. -LH` to see the full list of available flags.
 
@@ -113,6 +114,9 @@ Usage examples can be found in the [examples](examples) directory. To compile th
   * [ECDSA example](examples/ecdsa.c)
   * [Schnorr signatures example](examples/schnorr.c)
   * [Deriving a shared secret (ECDH) example](examples/ecdh.c)
+
+  * [ElligatorSwift key exchange example](examples/ellswift.c)
+  * [Silent Payments send and receive example](examples/silentpayments.c)
 
 To compile the Schnorr signature and ECDH examples, you also need to configure with `--enable-module-schnorrsig` and `--enable-module-ecdh`.
 
