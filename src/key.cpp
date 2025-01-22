@@ -22,7 +22,8 @@
 #include <openssl/obj_mac.h>
 #include <openssl/opensslv.h>
 
-secp256k1_context* secp256k1_context_sign = nullptr;
+secp256k1_context* 
+secp256k1_context_sign = nullptr;
 
 #if OPENSSL_VERSION_NUMBER < 0x10100000L
 // Compatibility Layer for older versions of Open SSL
