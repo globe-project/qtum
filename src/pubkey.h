@@ -118,6 +118,9 @@ public:
     {
         return std::vector<unsigned char>(begin(), end());
     }
+    
+    //! Public key addition
+    friend CPubKey operator+(const CPubKey& a, const CPubKey& b);
 
     //! Comparator implementation.
     friend bool operator==(const CPubKey& a, const CPubKey& b)
@@ -224,6 +227,9 @@ public:
     //! Recover public key from a lax DER signature
     bool RecoverLaxDER(const uint256 &hash, const std::vector<unsigned char>& vchSig, uint8_t recid, bool fComp);
 
+    /** Tweak a public key by adding the generator multiplied with tweak32 to it. */
+    bool TweakAdd(const unsigned char *tweak32);
+
     //! Recover a public key from a compact signature.
     bool RecoverCompact(const uint256& hash, const std::vector<unsigned char>& vchSig);
 
@@ -308,9 +314,18 @@ public:
     bool operator!=(const XOnlyPubKey& other) const { return m_keydata != other.m_keydata; }
     bool operator<(const XOnlyPubKey& other) const { return m_keydata < other.m_keydata; }
 
+    CPubKey ConvertToCompressedPubKey(bool even = true) const
+    {
+        std::vector<unsigned char> vch(std::begin(m_keydata), std::end(m_keydata));
+        vch.insert(vch.begin(), even ? 2 : 3);
+        return CPubKey(vch.begin(), vch.end());
+    }
+
     //! Implement serialization without length prefixes since it is a fixed length
     SERIALIZE_METHODS(XOnlyPubKey, obj) { READWRITE(obj.m_keydata); }
 };
+
+extern const XOnlyPubKey NUMS_H;
 
 /** An ElligatorSwift-encoded public key. */
 struct EllSwiftPubKey

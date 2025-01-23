@@ -275,6 +275,43 @@ std::optional<std::pair<XOnlyPubKey, bool>> XOnlyPubKey::CreateTapTweak(const ui
     return ret;
 }
 
+CPubKey operator+(const CPubKey& a, const CPubKey& b)
+{
+    // Parse
+    secp256k1_pubkey a_pubkey, b_pubkey;
+    int ret = secp256k1_ec_pubkey_parse(secp256k1_context_static, &a_pubkey, a.data(), a.size());
+    assert(ret == 1);
+    ret = secp256k1_ec_pubkey_parse(secp256k1_context_static, &b_pubkey, b.data(), b.size());
+    assert(ret == 1);
+    // add a + b
+    secp256k1_pubkey combined;
+    std::array<secp256k1_pubkey*, 2> pk_ptrs = {&a_pubkey, &b_pubkey};
+    ret = secp256k1_ec_pubkey_combine(secp256k1_context_static, &combined, pk_ptrs.data(), 2);
+    assert(ret == 1);
+    // Serialize and return the result
+    unsigned char pub[CPubKey::COMPRESSED_SIZE];
+    size_t publen = CPubKey::COMPRESSED_SIZE;
+    ret = secp256k1_ec_pubkey_serialize(secp256k1_context_static, pub, &publen, &combined, SECP256K1_EC_COMPRESSED);
+    assert(ret == 1);
+    CPubKey result;
+    result.Set(pub, pub + publen);
+    return result;
+}
+bool CPubKey::TweakAdd(const unsigned char *tweak32)
+{
+    secp256k1_pubkey original_pubkey;
+    int return_val = secp256k1_ec_pubkey_parse(secp256k1_context_static, &original_pubkey, data(), size());
+    assert(return_val);
+    return_val = secp256k1_ec_pubkey_tweak_add(secp256k1_context_static, &original_pubkey, tweak32);
+    assert(return_val);
+    unsigned char pubkey_bytes[COMPRESSED_SIZE];
+    size_t publen = COMPRESSED_SIZE;
+    return_val = secp256k1_ec_pubkey_serialize(secp256k1_context_static, pubkey_bytes, &publen, &original_pubkey, SECP256K1_EC_COMPRESSED);
+    assert(return_val);
+    Set(pubkey_bytes, pubkey_bytes + publen);
+    return IsValid();
+}
+
 
 bool CPubKey::Verify(const uint256 &hash, const std::vector<unsigned char>& vchSig) const {
     if (!IsValid())
