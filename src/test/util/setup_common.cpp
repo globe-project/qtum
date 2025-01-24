@@ -178,7 +178,7 @@ ChainTestingSetup::ChainTestingSetup(const ChainType chainType, const std::vecto
     // from blocking due to queue overrun.
     m_node.scheduler = std::make_unique<CScheduler>();
     m_node.scheduler->m_service_thread = std::thread(util::TraceThread, "scheduler", [&] { m_node.scheduler->serviceQueue(); });
-    m_node.validation_signals = std::make_unique<CMainSignals>();
+    m_node.validation_signals = std::make_unique<ValidationSignals>(std::make_unique<SerialTaskRunner>(*m_node.scheduler));
     m_node.validation_signals->RegisterBackgroundSignalScheduler(*m_node.scheduler);
 
 ////////////////////////////////////////////////////////////// qtum

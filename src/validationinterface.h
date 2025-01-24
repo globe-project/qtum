@@ -18,11 +18,14 @@
 #include <memory>
 #include <vector>
 
+namespace util {
+class TaskRunnerInterface;
+} // namespace util
+
 class BlockValidationState;
 class CBlock;
 class CBlockIndex;
 struct CBlockLocator;
-class CScheduler;
 enum class MemPoolRemovalReason;
 struct RemovedMempoolTransactionInfo;
 struct NewMempoolTransactionInfo;
@@ -151,18 +154,23 @@ protected:
      * has been received and connected to the headers tree, though not validated yet.
      */
     virtual void NewPoWValidBlock(const CBlockIndex *pindex, const std::shared_ptr<const CBlock>& block) {};
-    friend class CMainSignals;
+    friend class ValidationSignals;
     friend class ValidationInterfaceTest;
 };
 
-class MainSignalsImpl;
-class CMainSignals {
+class ValidationSignals;
+class ValidationSignals {
 private:
-    std::unique_ptr<MainSignalsImpl> m_internals;
+    std::unique_ptr<ValidationSignals> m_internals;
 
 public:
-    CMainSignals();
-    ~CMainSignals();
+
+    // The task runner will block validation if it calls its insert method's
+    // func argument synchronously. In this class func contains a loop that
+    // dispatches a single validation event to all subscribers sequentially.
+    explicit ValidationSignals(std::unique_ptr<util::TaskRunnerInterface> task_runner);
+
+    ~ValidationSignals();
 
     /** Register a CScheduler to give callbacks which should run in the background (may only be called once) */
     void RegisterBackgroundSignalScheduler(CScheduler& scheduler);

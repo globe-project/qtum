@@ -1480,7 +1480,7 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
     }, std::chrono::minutes{5});
 
     assert(!node.validation_signals);
-    node.validation_signals = std::make_unique<CMainSignals>();
+    node.validation_signals = std::make_unique<ValidationSignals>(std::make_unique<SerialTaskRunner>(scheduler));
     auto& validation_signals = *node.validation_signals;
     validation_signals.RegisterBackgroundSignalScheduler(*node.scheduler);
 
