@@ -69,8 +69,6 @@ int main(int argc, char* argv[])
 
     ValidationSignals validation_signals{std::make_unique<util::ImmediateTaskRunner>()};
 
-    validation_signals.RegisterBackgroundSignalScheduler(scheduler);
-
     class KernelNotifications : public kernel::Notifications
     {
     public:
@@ -292,5 +290,4 @@ epilogue:
             }
         }
     }
-    validation_signals.UnregisterBackgroundSignalScheduler();
 }

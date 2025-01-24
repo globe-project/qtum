@@ -179,7 +179,6 @@ ChainTestingSetup::ChainTestingSetup(const ChainType chainType, const std::vecto
     m_node.scheduler = std::make_unique<CScheduler>();
     m_node.scheduler->m_service_thread = std::thread(util::TraceThread, "scheduler", [&] { m_node.scheduler->serviceQueue(); });
     m_node.validation_signals = std::make_unique<ValidationSignals>(std::make_unique<SerialTaskRunner>(*m_node.scheduler));
-    m_node.validation_signals->RegisterBackgroundSignalScheduler(*m_node.scheduler);
 
 ////////////////////////////////////////////////////////////// qtum
     dev::eth::NoProof::init();		
@@ -232,7 +231,6 @@ ChainTestingSetup::~ChainTestingSetup()
 {
     if (m_node.scheduler) m_node.scheduler->stop();
     m_node.validation_signals->FlushBackgroundCallbacks();
-    m_node.validation_signals->UnregisterBackgroundSignalScheduler();
     m_node.connman.reset();
     m_node.banman.reset();
     m_node.addrman.reset();

@@ -98,27 +98,13 @@ ValidationSignals::ValidationSignals(std::unique_ptr<util::TaskRunnerInterface> 
 
 ValidationSignals::~ValidationSignals() {}
 
-void ValidationSignals::RegisterBackgroundSignalScheduler(CScheduler& scheduler)
-{
-    assert(!m_internals);
-    m_internals = std::make_unique<MainSignalsImpl>(scheduler);
-}
-
-void ValidationSignals::UnregisterBackgroundSignalScheduler()
-{
-    m_internals.reset(nullptr);
-}
-
 void ValidationSignals::FlushBackgroundCallbacks()
 {
-    if (m_internals) {
-        m_internals->m_task_runner->flush();
-    }
+    m_internals->m_task_runner->flush();
 }
 
 size_t ValidationSignals::CallbacksPending()
 {
-    if (!m_internals) return 0;
     return m_internals->m_task_runner->size();
 }
 
@@ -143,16 +129,11 @@ void ValidationSignals::UnregisterSharedValidationInterface(std::shared_ptr<CVal
 
 void ValidationSignals::UnregisterValidationInterface(CValidationInterface* callbacks)
 {
-    if (m_internals) {
-        m_internals->Unregister(callbacks);
-    }
+    m_internals->Unregister(callbacks);
 }
 
 void ValidationSignals::UnregisterAllValidationInterfaces()
 {
-    if (!m_internals) {
-        return;
-    }
     m_internals->Clear();
 }
 
