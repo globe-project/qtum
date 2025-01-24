@@ -1773,7 +1773,7 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
         .chainparams = chainparams,
         .datadir = args.GetDataDirNet(),
         .notifications = *node.notifications,
-        .signals = &GetMainSignals(),
+        .signals = &validation_signals,
     };
     Assert(ApplyArgsManOptions(args, chainman_opts)); // no error can happen, already checked in AppInitParameterInteraction
 
@@ -1803,7 +1803,7 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
 
     CTxMemPool::Options mempool_opts{
         .check_ratio = chainparams.DefaultConsistencyChecks() ? 1 : 0,
-        .signals = &GetMainSignals(),
+        .signals = &validation_signals,
     };
     auto result{ApplyArgsManOptions(args, chainparams, mempool_opts)};
     if (!result) {
