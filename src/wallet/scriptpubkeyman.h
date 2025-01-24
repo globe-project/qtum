@@ -251,6 +251,7 @@ public:
     virtual bool SignTransactionStake(CMutableTransaction& tx, const std::vector<std::pair<CTxOut,unsigned int>>& coins) const { return false; }
     /** Creates new coinstake block signature and adds it to the header. Returns whether the block was signed */
     virtual bool SignBlockStake(CBlock& block, const PKHash& pkhash, bool compact) const { return false; }
+    virtual std::pair<CKey,bool> GetPrivKeyForSilentPayment(const CScript& scriptPubKey) const { return {}; }
 
     virtual uint256 GetID() const { return uint256(); }
 
@@ -302,9 +303,6 @@ private:
 
     // By default, do not scan any block until keys/scripts are generated/imported
     int64_t nTimeFirstKey GUARDED_BY(cs_KeyStore) = UNKNOWN_TIME;
-
-    //! Number of pre-generated keys/scripts (part of the look-ahead process, used to detect payments)
-    int64_t m_keypool_size GUARDED_BY(cs_KeyStore){DEFAULT_KEYPOOL_SIZE};
 
     bool AddKeyPubKeyInner(const CKey& key, const CPubKey &pubkey);
     bool AddCryptedKeyInner(const CPubKey &vchPubKey, const std::vector<unsigned char> &vchCryptedSecret);
@@ -606,11 +604,14 @@ protected:
     //! Same as 'TopUp' but designed for use within a batch transaction context
     bool TopUpWithDB(WalletBatch& batch, unsigned int size = 0);
 
+    //! Number of pre-generated keys/scripts (part of the look-ahead process, used to detect payments)
+    int64_t m_keypool_size GUARDED_BY(cs_desc_man){DEFAULT_KEYPOOL_SIZE};
+
 public:
     DescriptorScriptPubKeyMan(WalletStorage& storage, WalletDescriptor& descriptor, int64_t keypool_size)
         :   ScriptPubKeyMan(storage),
-            m_keypool_size(keypool_size),
-            m_wallet_descriptor(descriptor)
+            m_wallet_descriptor(descriptor),
+            m_keypool_size(keypool_size)
         {}
     DescriptorScriptPubKeyMan(WalletStorage& storage, int64_t keypool_size)
         :   ScriptPubKeyMan(storage),
@@ -670,7 +671,7 @@ public:
     bool AddKey(const CKeyID& key_id, const CKey& key);
     bool AddCryptedKey(const CKeyID& key_id, const CPubKey& pubkey, const std::vector<unsigned char>& crypted_key);
 
-    std::pair<CKey,bool> GetPrivKeyForSilentPayment(const CScript& scriptPubKey) const;
+    std::pair<CKey,bool> GetPrivKeyForSilentPayment(const CScript& scriptPubKey) const override;
 
     bool HasWalletDescriptor(const WalletDescriptor& desc) const;
     void UpdateWalletDescriptor(WalletDescriptor& descriptor);
