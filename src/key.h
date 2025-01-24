@@ -129,6 +129,8 @@ public:
     //! Negate private key
     bool Negate();
 
+    bool ApplyTapTweak(const uint256*, CKey&) const;
+
     //! Tweak a secret key by adding a scalar value to it.
     //
     bool TweakAdd(const unsigned char *tweak32);
