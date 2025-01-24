@@ -7,6 +7,7 @@
 
 #include <attributes.h>
 #include <chain.h>
+#include <coins.h>
 #include <consensus/validation.h>
 #include <kernel/chain.h>
 #include <kernel/mempool_entry.h>
@@ -94,8 +95,6 @@ public:
     }
 };
 
-static CMainSignals g_signals;
-
 void CMainSignals::RegisterBackgroundSignalScheduler(CScheduler& scheduler)
 {
     assert(!m_internals);
@@ -118,11 +117,6 @@ size_t CMainSignals::CallbacksPending()
 {
     if (!m_internals) return 0;
     return m_internals->m_schedulerClient.CallbacksPending();
-}
-
-CMainSignals& GetMainSignals()
-{
-    return g_signals;
 }
 
 void RegisterSharedValidationInterface(std::shared_ptr<CValidationInterface> callbacks)

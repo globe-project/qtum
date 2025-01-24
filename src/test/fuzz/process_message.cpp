@@ -48,7 +48,7 @@ void initialize_process_message()
     for (int i = 0; i < 2 * coinbaseMaturity; i++) {
         MineBlock(g_setup->m_node, CScript() << OP_TRUE);
     }
-    SyncWithValidationInterfaceQueue();
+    g_setup->m_node.validation_signals->SyncWithValidationInterfaceQueue();
 }
 
 FUZZ_TARGET(process_message, .init = initialize_process_message)
@@ -90,6 +90,6 @@ FUZZ_TARGET(process_message, .init = initialize_process_message)
         }
         g_setup->m_node.peerman->SendMessages(&p2p_node);
     }
-    SyncWithValidationInterfaceQueue();
+    g_setup->m_node.validation_signals->SyncWithValidationInterfaceQueue();
     g_setup->m_node.connman->StopNodes();
 }
