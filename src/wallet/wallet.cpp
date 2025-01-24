@@ -5666,4 +5666,11 @@ CAmount CWallet::GetTxGasFee(const CMutableTransaction& tx)
     }
     return 0;
 }
+
+size_t GetSerializeSizeForRecipient(const CRecipient& recipient)
+{
+    return std::visit([&recipient](auto&& dest) -> size_t {
+        return ::GetSerializeSize(CTxOut(recipient.nAmount, GetScriptForDestination(dest)));
+    }, recipient.dest);
+}
 } // namespace wallet
