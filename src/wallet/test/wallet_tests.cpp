@@ -678,7 +678,7 @@ BOOST_FIXTURE_TEST_CASE(BasicOutputTypesTest, ListCoinsTest)
     //   2. One UTXO from the change, due to payment address matching logic
 
     for (const auto& out_type : OUTPUT_TYPES) {
-        if (out_type == OutputType::UNKNOWN) continue;
+        if (out_type == OutputType::UNKNOWN || out_type == OutputType::SILENT_PAYMENT) continue;
         if(out_type == OutputType::P2PK) {
             // Add the coins to the LEGACY address for P2PK output
             expected_coins_sizes[OutputType::LEGACY] += 2U;

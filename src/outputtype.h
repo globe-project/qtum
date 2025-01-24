@@ -20,6 +20,7 @@ enum class OutputType {
     BECH32,
     BECH32M,
     P2PK,
+    SILENT_PAYMENT,
     UNKNOWN,
 };
 
@@ -28,6 +29,7 @@ static constexpr auto OUTPUT_TYPES = std::array{
     OutputType::P2SH_SEGWIT,
     OutputType::BECH32,
     OutputType::BECH32M,
+    OutputType::SILENT_PAYMENT,
     OutputType::P2PK,
 };
 
