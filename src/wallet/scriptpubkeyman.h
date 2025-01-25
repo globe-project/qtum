@@ -304,6 +304,9 @@ private:
     // By default, do not scan any block until keys/scripts are generated/imported
     int64_t nTimeFirstKey GUARDED_BY(cs_KeyStore) = UNKNOWN_TIME;
 
+    //! Number of pre-generated keys/scripts (part of the look-ahead process, used to detect payments)
+    int64_t m_keypool_size GUARDED_BY(cs_KeyStore){DEFAULT_KEYPOOL_SIZE};
+
     bool AddKeyPubKeyInner(const CKey& key, const CPubKey &pubkey);
     bool AddCryptedKeyInner(const CPubKey &vchPubKey, const std::vector<unsigned char> &vchCryptedSecret);
 
@@ -582,9 +585,6 @@ private:
     //! keeps track of whether Unlock has run a thorough check before
     bool m_decryption_thoroughly_checked = false;
 
-    //! Number of pre-generated keys/scripts (part of the look-ahead process, used to detect payments)
-    int64_t m_keypool_size GUARDED_BY(cs_desc_man){DEFAULT_KEYPOOL_SIZE};
-
     bool AddDescriptorKeyWithDB(WalletBatch& batch, const CKey& key, const CPubKey &pubkey) EXCLUSIVE_LOCKS_REQUIRED(cs_desc_man);
 
     KeyMap GetKeys() const EXCLUSIVE_LOCKS_REQUIRED(cs_desc_man);
@@ -603,6 +603,9 @@ protected:
 
     //! Same as 'TopUp' but designed for use within a batch transaction context
     bool TopUpWithDB(WalletBatch& batch, unsigned int size = 0);
+
+    //! Number of pre-generated keys/scripts (part of the look-ahead process, used to detect payments)
+    int64_t m_keypool_size GUARDED_BY(cs_KeyStore){DEFAULT_KEYPOOL_SIZE};
 
 public:
     DescriptorScriptPubKeyMan(WalletStorage& storage, WalletDescriptor& descriptor, int64_t keypool_size)
